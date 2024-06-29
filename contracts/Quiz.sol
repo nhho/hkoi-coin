@@ -49,14 +49,14 @@ contract Quiz {
         bytes32 hash = keccak256(abi.encode(tx.origin, answer));
         uint256 count = 0;
         for (uint256 i = 0; i < 32; i++) {
-            if (hash[i] == 0) {
+            if (uint8(hash[i]) == 0) {
                 count++;
             }
         }
         require(count > answeredQuestionFour[tx.origin]);
         coin.mint(
             tx.origin,
-            (count - answeredQuestionFour[tx.origin]) * 5 * 1e18
+            (count - answeredQuestionFour[tx.origin]) * 10 * 1e18
         );
         answeredQuestionFour[tx.origin] = count;
     }

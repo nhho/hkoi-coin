@@ -89,12 +89,12 @@ function ConnectedSection({ account }: AccountProps) {
     userMap.get(teams[i]).set(names[i], addresses[i]);
   }
 
-  // TODO: <QuizSection />
   return (
     <>
       {isAdmin && <AdminSection userMap={userMap} />}
       <UsersSection userMap={userMap} />
       <SendSection />
+      <QuizSection />
     </>
   );
 }
@@ -291,7 +291,7 @@ function MintSection() {
     const args = [
       data.get('address') as string,
       parseUnits(data.get('amount') as string, 18)
-    ]
+    ];
     writeContract({
       abi: Coin.abi,
       address: coinAddress,
@@ -385,7 +385,7 @@ function SponsorWithdrawSection() {
     const args = [
       data.get('address') as string,
       parseUnits(data.get('amount') as string, 18)
-    ]
+    ];
     writeContract({
       abi: Sponsor.abi,
       address: sponsorAddress,
@@ -424,7 +424,7 @@ function SponsorUsersSection() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    const args = [parseUnits(data.get('amount') as string, 18)]
+    const args = [parseUnits(data.get('amount') as string, 18)];
     writeContract({
       abi: Sponsor.abi,
       address: sponsorAddress,
@@ -569,7 +569,7 @@ function SendSection() {
     const args = [
       data.get('address') as string,
       parseUnits(data.get('amount') as string, 18)
-    ]
+    ];
     writeContract({
       abi: Coin.abi,
       address: coinAddress,
@@ -599,10 +599,14 @@ function SendSection() {
 }
 
 function QuizSection() {
+  return;
   return (
     <>
       <QuesionOneSection />
       <QuesionTwoSection />
+      <QuesionThreeSection />
+      <QuesionFourSection />
+      <QuesionFiveSection />
     </>
   );
 }
@@ -615,7 +619,7 @@ function QuesionOneSection() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    const args = [BigInt(data.get('amount') as string)]
+    const args = [BigInt(data.get('answer') as string)];
     writeContract({
       abi: Quiz.abi,
       address: quizAddress,
@@ -626,7 +630,7 @@ function QuesionOneSection() {
 
   return (
     <>
-      <h2>Question 1: Maths</h2>
+      <h2>Question 1: Maths (10 Coin)</h2>
       <pre>
         <code>{`    function questionOne(uint256 answer) external onlyAdminOrUser {
         require(answer == 1 + 2 + 3);
@@ -637,7 +641,7 @@ function QuesionOneSection() {
       </pre>
       <form onSubmit={handleSubmit}>
         <div>
-          Answer: <input name='amount' defaultValue='123' />
+          Answer: <input name='answer' defaultValue='123' />
         </div>
         <div>
           <button type='submit'>Submit</button>
@@ -657,7 +661,7 @@ function QuesionTwoSection() {
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    const args = [BigInt(data.get('amount') as string)]
+    const args = [BigInt(data.get('answer') as string)];
     writeContract({
       abi: Quiz.abi,
       address: quizAddress,
@@ -668,7 +672,7 @@ function QuesionTwoSection() {
 
   return (
     <>
-      <h2>Question 2: Read Smart Contract</h2>
+      <h2>Question 2: Read Smart Contract (20 Coin)</h2>
       <pre>
         <code>{`    function questionTwo(uint256 answer) external onlyAdminOrUser {
         require(answer == doYouKnowWhereToFindMe);
@@ -679,8 +683,146 @@ function QuesionTwoSection() {
       </pre>
       <form onSubmit={handleSubmit}>
         <div>
-          Answer: <input name='amount' defaultValue='123' />
+          Answer: <input name='answer' defaultValue='123' />
         </div>
+        <div>
+          <button type='submit'>Submit</button>
+        </div>
+        {data && <ScanSection hash={data} />}
+        {error && <div>{error.name}: {error.message}</div>}
+      </form>
+    </>
+  );
+}
+
+function QuesionThreeSection() {
+  const quizAddress = process.env.NEXT_PUBLIC_QUIZ_ADDRESS as Address;
+  const config = useConfig();
+  const { data, error, writeContract } = useWriteContract({config});
+  const link = blockLink();
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const args = [BigInt(data.get('answer') as string)];
+    writeContract({
+      abi: Quiz.abi,
+      address: quizAddress,
+      functionName: 'questionThree',
+      args: args
+    });
+  }
+
+  return (
+    <>
+      <h2>Question 3: Dynamic answer (30 Coin)</h2>
+      <div>
+        <a href={link} target='_blank'>{link}</a>
+      </div>
+      <pre>
+        <code>{`    function questionThree(uint256 answer) external onlyAdminOrUser {
+        require(answer == block.number);
+        require(!answeredQuestionThree[tx.origin]);
+        answeredQuestionThree[tx.origin] = true;
+        coin.mint(tx.origin, 30 * 1e18);
+    }`}</code>
+      </pre>
+      <form onSubmit={handleSubmit}>
+        <div>
+          Answer: <input name='answer' defaultValue='123' />
+        </div>
+        <div>
+          <button type='submit'>Submit</button>
+        </div>
+        {data && <ScanSection hash={data} />}
+        {error && <div>{error.name}: {error.message}</div>}
+      </form>
+    </>
+  );
+}
+
+function QuesionFourSection() {
+  const quizAddress = process.env.NEXT_PUBLIC_QUIZ_ADDRESS as Address;
+  const config = useConfig();
+  const { data, error, writeContract } = useWriteContract({config});
+  const link = blockLink();
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const args = [BigInt(data.get('answer') as string)];
+    writeContract({
+      abi: Quiz.abi,
+      address: quizAddress,
+      functionName: 'questionFour',
+      args: args
+    });
+  }
+
+  return (
+    <>
+      <h2>Question 4: Mining simulator (10-320 Coin)</h2>
+      <pre>
+        <code>{`    function questionFour(uint256 answer) external onlyAdminOrUser {
+        bytes32 hash = keccak256(abi.encode(tx.origin, answer));
+        uint256 count = 0;
+        for (uint256 i = 0; i < 32; i++) {
+            if (uint8(hash[i]) == 0) {
+                count++;
+            }
+        }
+        require(count > answeredQuestionFour[tx.origin]);
+        coin.mint(
+            tx.origin,
+            (count - answeredQuestionFour[tx.origin]) * 10 * 1e18
+        );
+        answeredQuestionFour[tx.origin] = count;
+    }`}</code>
+      </pre>
+      <form onSubmit={handleSubmit}>
+        <div>
+          Answer: <input name='answer' defaultValue='123' />
+        </div>
+        <div>
+          <button type='submit'>Submit</button>
+        </div>
+        {data && <ScanSection hash={data} />}
+        {error && <div>{error.name}: {error.message}</div>}
+      </form>
+    </>
+  );
+}
+
+function QuesionFiveSection() {
+  const quizAddress = process.env.NEXT_PUBLIC_QUIZ_ADDRESS as Address;
+  const config = useConfig();
+  const { data, error, writeContract } = useWriteContract({config});
+  const link = blockLink();
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const args: any[] = [];
+    writeContract({
+      abi: Quiz.abi,
+      address: quizAddress,
+      functionName: 'questionFive',
+      args: args
+    });
+  }
+
+  return (
+    <>
+      <h2>Question 5: Sender vs Origin (40 Coin)</h2>
+      <pre>
+        <code>{`    function questionFive() external onlyAdminOrUser {
+        require(msg.sender != tx.origin);
+        require(!answeredQuestionFive[tx.origin]);
+        answeredQuestionFive[tx.origin] = true;
+        coin.mint(tx.origin, 40 * 1e18);
+    }`}</code>
+      </pre>
+      <form onSubmit={handleSubmit}>
         <div>
           <button type='submit'>Submit</button>
         </div>
@@ -773,6 +915,18 @@ function scanLink(hash: string): string {
     }
     case 'base-sepolia': {
       return 'https://sepolia.basescan.org/tx/' + hash
+    }
+  }
+  throw new Error('Unsupported chain');
+}
+
+function blockLink(): string {
+  switch (process.env.NEXT_PUBLIC_CHAIN) {
+    case 'base': {
+      return 'https://basescan.org/blocks'
+    }
+    case 'base-sepolia': {
+      return 'https://sepolia.basescan.org/blocks'
     }
   }
   throw new Error('Unsupported chain');
