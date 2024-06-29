@@ -521,11 +521,9 @@ function ContractSection({ name, address }: ContractProps) {
 }
 
 function UsersSection({ userMap }: UserProps) {
-  const balances = [...userMap.entries()].sort().map(entry =>
-    [...entry[1].entries()].sort().map(subEntry => (
-      <CoinBalanceSection key={subEntry[1]} team={entry[0]} name={subEntry[0]} address={subEntry[1]} />
-    ))
-  );
+  const balances = [...userMap.entries()].map(entry => [...entry[1].entries()]).flat().sort().map(entry => (
+    <CoinBalanceSection key={entry[1]} team={''} name={entry[0]} address={entry[1]} />
+  ));
   return (
     <>
       <h2>Users Balance</h2>
@@ -550,7 +548,7 @@ function CoinBalanceSection({ team, name, address }: BalanceProps) {
   const coinAddress = process.env.NEXT_PUBLIC_COIN_ADDRESS as Address;
   const { data, status } = useBalance({address: address as Address, token: coinAddress});
   if (status !== 'success') return;
-  return <div>{name} (team {team}) (<AddressSection hash={address} />): {data.formatted}</div>;
+  return <div>{name} (<AddressSection hash={address} />): {data.formatted}</div>;
 }
 
 function SendSection() {
