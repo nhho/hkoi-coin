@@ -143,7 +143,7 @@ function AddAdminSection() {
       <h2>Add admin</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          Address: <input name='address' defaultValue='0x0123' />
+          Address: <input name='address' defaultValue='0x0123' size={50} />
         </div>
         <div>
           <button type='submit'>Add</button>
@@ -176,7 +176,7 @@ function AddUserSection() {
       <h2>Add user</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          Address: <input name='address' defaultValue='0x0123' />
+          Address: <input name='address' defaultValue='0x0123' size={50} />
         </div>
         <div>
           Name: <input name='name' defaultValue='HKOI username' />
@@ -305,7 +305,7 @@ function MintSection() {
       <h2>Mint (create and send) HKOI Coin</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          Address: <input name='address' defaultValue='0x0123' />
+          Address: <input name='address' defaultValue='0x0123' size={50} />
         </div>
         <div>
           Amount: <input name='amount' defaultValue='1' />
@@ -401,7 +401,7 @@ function SponsorWithdrawSection() {
       <div>Note that you need some gas to invoke this function too...</div>
       <form onSubmit={handleSubmit}>
         <div>
-          Address: <input name='address' defaultValue='0x0123' />
+          Address: <input name='address' defaultValue='0x0123' size={50} />
         </div>
         <div>
           Amount: <input name='amount' defaultValue='0.00001' />
@@ -548,7 +548,14 @@ function CoinBalanceSection({ team, name, address }: BalanceProps) {
   const coinAddress = process.env.NEXT_PUBLIC_COIN_ADDRESS as Address;
   const { data, status } = useBalance({address: address as Address, token: coinAddress});
   if (status !== 'success') return;
-  return <div>{name} (<AddressSection hash={address} />): {data.formatted}</div>;
+
+  function handleClick() {
+    const e = document.getElementById('transfer_target');
+    if (!e) return;
+    (e as HTMLInputElement).value = address;
+  }
+
+  return <div>{name} <button onClick={handleClick}>{address}</button>: {data.formatted}</div>;
 }
 
 function SendSection() {
@@ -576,7 +583,7 @@ function SendSection() {
       <h2>Transfer HKOI Coin</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          Address: <input name='address' defaultValue='0x0123' />
+          Address: <input name='address' defaultValue='0x0123' id='transfer_target' size={50} />
         </div>
         <div>
           Amount: <input name='amount' defaultValue='1' />
