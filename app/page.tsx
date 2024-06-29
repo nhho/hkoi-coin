@@ -599,7 +599,6 @@ function SendSection() {
 }
 
 function QuizSection() {
-  return;
   return (
     <>
       <QuesionOneSection />
