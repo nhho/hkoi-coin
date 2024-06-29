@@ -664,6 +664,14 @@ function QuesionTwoSection() {
   return (
     <>
       <h2>Question 2: Read Smart Contract</h2>
+      <pre>
+        <code>{`    function questionTwo(uint256 answer) external onlyAdminOrUser {
+        require(answer == doYouKnowWhereToFindMe);
+        require(!answeredQuestionTwo[tx.origin]);
+        answeredQuestionTwo[tx.origin] = true;
+        coin.mint(tx.origin, 20 * 1e18);
+    }`}</code>
+      </pre>
       <form onSubmit={handleSubmit}>
         <div>
           Answer: <input name='amount' defaultValue='123' />
